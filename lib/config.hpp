@@ -9,4 +9,7 @@ mot モーターに加わる電圧(AngleXもセットで)
 tim 1回の経過時間(ミリ秒)
 ble BLEの接続状況
 *******************/
-extern std::string SerialWatch = "ang";
+//extern std::string SerialWatch = "ang";
+
+//BLDC
+#define ESCpin 0
