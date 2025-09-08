@@ -13,3 +13,12 @@ ble BLEの接続状況
 
 //BLDC
 #define ESCpin 0
+
+//SPI
+#define SPI_CSpin 1
+#define SPI_SCKpin 2
+#define SPI_RXpin 3
+#define SPI_TXpin 4
+
+//ボール検知
+#define BallDetectpin 6
