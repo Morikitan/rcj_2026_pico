@@ -1,0 +1,36 @@
+.program spi_slave
+; SPI Slave, mode 0 (CPOL=0, CPHA=0)
+; MOSI: 入力ライン（master → slave）
+; MISO: 出力ライン（slave → master）
+; CS: チップセレクト、Low で通信アクティブ
+; SCK: クロック信号、立ち上がりでサンプル & 立ち立ち上がりでシフトアウト（Mode0）
+
+; CS が Low になるまで待つ
+wait_cs_low:
+    wait 0 gpio 1      ; CS が Low -> “0”
+    jmp wait_cs_low
+
+; コマンドバイトを MOSI から受信
+recv_cmd:
+    in pins, 1                 ; Dummy read to align with proper cycles
+; 以下で 8 ビット受信
+    set x, 7
+bit_recv:
+    wait 1 gpio 2    ; 待機：SCK が立ち上がる
+    in pins, 1                 ; 読み込み MOSI
+    wait 0 gpio 2    ; 待機：SCK が立ち落ちる
+    jmp x-- bit_recv
+    push block                 ; コマンドバイトを FIFO にプッシュ
+
+; 応答フェーズ：マスターがクロックを出してくる限り応答を返す
+resp_loop:
+    pull block                 ; レスポンスバイト読み出し
+    set y, 7
+bit_send:
+    wait 1 gpio 2     ; SCK の立ち上がり
+    out pins, 1                ; MISO に最上位ビット
+    wait 0 gpio 2    ; SCK の立ち落ち
+    jmp y-- bit_send
+    jmp resp_loop
+
+; もし CS が High になったら初期状態に戻す
