@@ -44,9 +44,9 @@ void SPISetup(){
 
     // enable IRQ from PIO for SM0
     pio_set_irq0_source_enabled(pio, pis_sm0_rx_fifo_not_empty, true);
+
+    //spi_set_format()
 }
-
-
 
 void irq_handler() {
     // PIO の受信 FIFO をチェック
