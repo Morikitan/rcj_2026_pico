@@ -19,6 +19,6 @@ ble BLEの接続状況
 #define SPI_SCKpin 2
 #define SPI_RXpin 4
 #define SPI_TXpin 3
-
+#define SERIAL_BAUD 125000
 //ボール検知
 #define BallDetectpin 6

@@ -17,7 +17,7 @@ int main()
     printf("Arming ESC...\n");
     sleep_ms(2000);
     */
-    SPISetup();
+    RP2350Setup();
     while (true) {
         /*for (int pulse = 1000;pulse <= 2000;pulse += 50){
             BLDCState(pulse);
@@ -27,6 +27,7 @@ int main()
         BLDCState(1000);
         printf("1000\n");
         sleep_ms(1000);*/
-        SPISlave();
+        picoPioUartTx_program_putc(0x65,true);
+        sleep_ms(1000);
     }
 }
