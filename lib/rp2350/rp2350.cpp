@@ -1,10 +1,8 @@
 #include <stdio.h>
 #include "rp2350.hpp"
 #include "pico/stdlib.h"
-#include "hardware/spi.h"
 #include "../config.hpp"
 #include "hardware/pio.h"
-#include "spi_slave.pio.h"
 #include "picoPioUart.pio.h"
 #include "hardware/clocks.h"
 
@@ -21,98 +19,6 @@ uint offset;
 uint sm_rx;
 uint sm_tx;
 uint offset2;
-
-// 状態マシン番号と PIO インスタンス
-#define SM_INSTANCE    0
-
-void SPISetup(){
-    /*stdio_init_all();
-    // 応答デバッグ用
-    printf("SPI slave via PIO start\n");
-
-    // PIO プログラムをロード
-
-    gpio_pull_up(SPI_CSpin);
-    gpio_set_dir(SPI_CSpin, GPIO_IN);
-
-    gpio_set_dir(SPI_TXpin, GPIO_IN);
-    gpio_set_dir(SPI_SCKpin,  GPIO_IN);
-
-    gpio_set_dir(SPI_RXpin, GPIO_OUT);
-
-    pio = pio0;
-    offset = pio_add_program(pio, &spi_slave_program);
-    sm = pio_claim_unused_sm(pio, true);
-
-    // ステートマシンの初期化
-    spi_slave_program_init(pio, sm , offset,
-                           SPI_SCKpin, SPI_RXpin, SPI_TXpin, SPI_CSpin);
-
-    
-    // 割り込み設定（コマンド受信の検知）
-    //irq_set_exclusive_handler(PIO0_IRQ_0, irq_handler);
-    //irq_set_enabled(PIO0_IRQ_0, true);
-
-    // enable IRQ from PIO for SM0
-    //pio_set_irq0_source_enabled(pio, pis_sm0_rx_fifo_not_empty, true);
-
-    //spi_set_format()
-    */
-}
-
-void irq_handler() {
-    // PIO の受信 FIFO をチェック
-    if (pio_interrupt_get(pio0, 0)) {
-        // コマンドバイトを読み出し
-        // FIFO に push された値を pop
-        command = (uint8_t)pio_sm_get_blocking(pio0, SM_INSTANCE);
-        command_received = true;
-        // 割り込みクリア
-        pio_interrupt_clear(pio0, 0);
-    }
-}
-
-void SPISlave(){
-    if (!pio_sm_is_rx_fifo_empty(pio, sm)) {
-            uint8_t received = pio_sm_get(pio, sm) & 0xFF;
-            //printf("Received: 0x%02X\n", received);
-
-            if (received == 0x01) {
-                for (int i = 0; i < 8; ++i) {
-                    while (pio_sm_is_tx_fifo_full(pio, sm)) tight_loop_contents();
-                    pio_sm_put(pio, sm, response1[i]);
-                    //printf("Sent: 0x%02X\n", response1[i]);
-                }
-            }
-        }
-}
-
-void spi_slave_program_init(PIO pio, uint sm, uint offset,
-                            uint pin_sck, uint pin_mosi,
-                            uint pin_miso, uint pin_cs) {
-    /*pio_sm_config c = spi_slave_program_get_default_config(offset);
-
-    sm_config_set_in_pins(&c, pin_mosi);          // MOSI入力
-    sm_config_set_sideset_pins(&c, pin_miso);     // MISO出力
-    sm_config_set_clkdiv(&c, 1.0f);               // クロック分周
-
-    // GPIO初期化
-    pio_gpio_init(pio, pin_sck);
-    pio_gpio_init(pio, pin_mosi);
-    pio_gpio_init(pio, pin_miso);
-    pio_gpio_init(pio, pin_cs);
-
-    // ピン方向設定
-    pio_sm_set_consecutive_pindirs(pio, sm, pin_miso, 1, true);  // MISOは出力
-    pio_sm_set_consecutive_pindirs(pio, sm, pin_mosi, 1, false); // MOSIは入力
-    pio_sm_set_consecutive_pindirs(pio, sm, pin_sck,  1, false); // SCKは入力
-    pio_sm_set_consecutive_pindirs(pio, sm, pin_cs,   1, false); // CSは入力
-
-    // 状態マシン初期化・有効化
-    pio_sm_init(pio, sm, offset, &c);
-    pio_sm_set_enabled(pio, sm, true);
-    */
-}
     
 //pioをつかったUARTの初期設定
 void RP2350Setup(){
@@ -126,13 +32,20 @@ void RP2350Setup(){
     sm_rx = 0;
 
     offset = pio_add_program(pio, &picoPioUartRx_program);
-    picoPioUartRx_program_init(pio, sm_rx, offset, SPI_RXpin, SERIAL_BAUD);
+    picoPioUartRx_program_init(pio, sm_rx, offset, UART_RXpin, SERIAL_BAUD);
 
     // 使うSMを指定します(送信と受信では別のSMを使う)
     sm_tx = 1;
 
     offset2 = pio_add_program(pio, &picoPioUartTx_program);
-    picoPioUartTx_program_init(pio, sm_tx, offset2, SPI_TXpin, SERIAL_BAUD);
+    picoPioUartTx_program_init(pio, sm_tx, offset2, UART_TXpin, SERIAL_BAUD);
+
+    gpio_set_irq_enabled_with_callback(UART_RXpin,GPIO_IRQ_EDGE_FALL,true,&RP2350Callback);
+}
+
+//割り込みが起きたときにrp2350にデータを返す関数
+void RP2350Callback(uint gpio, uint32_t events){
+
 }
 
 //UART(シリアル通信)で送信する関数
@@ -165,11 +78,7 @@ void picoPioUartTx_program_putc(unsigned char data, bool even_parity) {
 //even_parity : 偶数か奇数のどちらになるようにパリティを付加されているか。trueで偶数。falseで奇数。
 //parity_check : パリティビットの結果。正しいならtrue。違ったらfalseで、例外処理を用意する。データがなくてもfalseになる。
 unsigned char picoPioUartRx_program_getc(bool even_parity,bool* parity_check) {
-    if(pio_sm_is_rx_fifo_empty(pio, sm_rx)){
-        *parity_check = false;
-        return 0;
-    }else{
-    //while (pio_sm_is_rx_fifo_empty(pio, sm_rx)) tight_loop_contents();
+    while (pio_sm_is_rx_fifo_empty(pio, sm_rx)) tight_loop_contents();
 
     uint32_t c32 = pio_sm_get(pio, sm_rx);
     
@@ -186,6 +95,5 @@ unsigned char picoPioUartRx_program_getc(bool even_parity,bool* parity_check) {
     *parity_check = (pcheck == real_parity);
 
     return (uint8_t)(c32 & 0xff);
-    }
 }
 

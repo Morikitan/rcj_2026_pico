@@ -14,11 +14,9 @@ ble BLEの接続状況
 //BLDC
 #define ESCpin 0
 
-//SPI
-#define SPI_CSpin 1
-#define SPI_SCKpin 2
-#define SPI_RXpin 4
-#define SPI_TXpin 3
+//UART
+#define UART_RXpin 4
+#define UART_TXpin 3
 #define SERIAL_BAUD 125000
 //ボール検知
 #define BallDetectpin 6
