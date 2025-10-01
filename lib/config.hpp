@@ -18,5 +18,15 @@ ble BLEの接続状況
 #define UART_RXpin 4
 #define UART_TXpin 3
 #define SERIAL_BAUD 125000
+
 //ボール検知
 #define BallDetectpin 6
+
+//エンコーダー
+#define encoderUART uart0
+#define Encoder_TXpin 16
+#define Encoder_RXpin 17
+
+extern bool isMotorClockWise[4];
+extern float motorFrequency[4];
+extern uint8_t encoderData[8];

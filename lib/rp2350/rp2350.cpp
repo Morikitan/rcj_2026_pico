@@ -19,6 +19,7 @@ uint offset;
 uint sm_rx;
 uint sm_tx;
 uint offset2;
+bool parity_check;
     
 //pioをつかったUARTの初期設定
 void RP2350Setup(){
@@ -45,7 +46,15 @@ void RP2350Setup(){
 
 //割り込みが起きたときにrp2350にデータを返す関数
 void RP2350Callback(uint gpio, uint32_t events){
+    unsigned char data = picoPioUartRx_program_getc(true,&parity_check);
+    if(data == 0x24){
+        //エンコーダー
+        // for(int i = 0;i < 4)
+        // picoPioUartTx_program_putc()
+        
+    }else{
 
+    }
 }
 
 //UART(シリアル通信)で送信する関数
