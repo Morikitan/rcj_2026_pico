@@ -46,12 +46,13 @@ void RP2350Setup(){
 
 //割り込みが起きたときにrp2350にデータを返す関数
 void RP2350Callback(uint gpio, uint32_t events){
+    picoPioUartRx_program_clear_buffer();
     unsigned char data = picoPioUartRx_program_getc(true,&parity_check);
     if(data == 0x24){
         //エンコーダー
-        // for(int i = 0;i < 4)
-        // picoPioUartTx_program_putc()
-        
+        for(int i = 0;i < 8;i++){
+            picoPioUartTx_program_putc(encoderData[i],true);
+        }
     }else{
 
     }
@@ -104,5 +105,11 @@ unsigned char picoPioUartRx_program_getc(bool even_parity,bool* parity_check) {
     *parity_check = (pcheck == real_parity);
 
     return (uint8_t)(c32 & 0xff);
+}
+
+void picoPioUartRx_program_clear_buffer(){
+    while (!pio_sm_is_rx_fifo_empty(pio, sm_rx)){
+        uint32_t c32 = pio_sm_get(pio, sm_rx);
+    }
 }
 

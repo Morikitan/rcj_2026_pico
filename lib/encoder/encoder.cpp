@@ -37,7 +37,7 @@ void UseEncoder(){
         uint32_t a = motorFrequency[i] * 100;
         //小数点以下2桁までのデータを送る。
         //タイヤの回転数が80回転/秒を超えることはないだろうという前提でのプログラム
-        encoderData[i*2] = (uint8_t)(a >> 8) | ((uint8_t)i << 4);
+        encoderData[i*2] = ((uint8_t)(a >> 8)) | ((uint8_t)i << 5) | (isMotorClockWise[i] ? 0b00010000 : 0);
         encoderData[i*2 + 1] = (uint8_t)a;
     }
     
