@@ -30,8 +30,8 @@ void UseEncoder(){
         if(deltaTime[i] == 0){
             motorFrequency[i] = 0;
         }else{
-            //deltaTime[i]は1/4周期にかかる時間(μs)。
-            motorFrequency[i] = 0.00000025 / deltaTime[i]; 
+            //deltaTime[i]は1/36周期にかかる時間(μs)。
+            motorFrequency[i] = 0.00000002778 / deltaTime[i]; 
         }
 
         uint32_t a = motorFrequency[i] * 100;
@@ -39,7 +39,6 @@ void UseEncoder(){
         //タイヤの回転数が80回転/秒を超えることはないだろうという前提でのプログラム
         encoderData[i*2] = ((uint8_t)(a >> 8)) | ((uint8_t)i << 5) | (isMotorClockWise[i] ? 0b00010000 : 0);
         encoderData[i*2 + 1] = (uint8_t)a;
-    }
-    
+    } 
 }
     
