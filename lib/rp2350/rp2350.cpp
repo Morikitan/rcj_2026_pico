@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "rp2350.hpp"
+#include "BLDC.hpp"
 #include "pico/stdlib.h"
 #include "../config.hpp"
 #include "hardware/pio.h"
@@ -23,10 +24,13 @@ bool parity_check;
     
 //pioをつかったUARTの初期設定
 void RP2350Setup(){
+    gpio_init(BallDetectpin);
+    gpio_set_dir(BallDetectpin,GPIO_OUT);
     /*********************************
     UART通信の信号
-    0x01 : エンコーダー
-
+    0x24 : エンコーダー
+    0x48 : BLDC(ブラシレスモーター)
+    0x72 : ボール検知
     */
     pio = pio0;
 
@@ -53,8 +57,21 @@ void RP2350Callback(uint gpio, uint32_t events){
         for(int i = 0;i < 8;i++){
             picoPioUartTx_program_putc(encoderData[i],true);
         }
-    }else{
-
+    }else if(data == 0x48){
+        //BLDC
+        data = picoPioUartRx_program_getc(true,&parity_check);
+        unsigned char data2 = picoPioUartRx_program_getc(true,&parity_check);
+        BLDCState((unsigned int)data * 256 + (unsigned int)data2);
+    }else if(data == 0x72){
+        //ボール検知
+        if(gpio_get(BallDetectpin) == true){
+            //HIGH → ボールを持っていない
+            picoPioUartTx_program_putc(0x01,true);
+        }else{
+            //LOW → ボールを持っていない
+            picoPioUartTx_program_putc(0x00,true);
+        }
+        
     }
 }
 
