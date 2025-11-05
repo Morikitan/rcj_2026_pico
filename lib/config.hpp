@@ -9,14 +9,15 @@ mot モーターに加わる電圧(AngleXもセットで)
 tim 1回の経過時間(ミリ秒)
 ble BLEの接続状況
 *******************/
-//extern std::string SerialWatch = "ang";
+extern std::string SerialWatch = "ang";
 
 //BLDC
 #define ESCpin 0
 
-//UART
-#define UART_RXpin 4
-#define UART_TXpin 3
+//UART for RP2350
+#define RP2350_UART_IRQpin 1
+#define RP2350_UART_RXpin 4
+#define RP2350_UART_TXpin 3
 #define SERIAL_BAUD 125000
 
 //ボール検知
@@ -30,3 +31,6 @@ ble BLEの接続状況
 extern bool isMotorClockWise[4];
 extern float motorFrequency[4];
 extern uint8_t encoderData[8];
+
+//その他
+extern int mode;

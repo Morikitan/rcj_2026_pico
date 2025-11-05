@@ -8,6 +8,11 @@
 #include "hardware/pwm.h"
 #include "rp2350/rp2350.hpp"
 #include "config.hpp"
+#include <string.h>
+
+int mode = 0;
+int premode = 0;
+std::string SerialWatch = "ang";
 
 int main()
 {
@@ -23,6 +28,15 @@ int main()
     
     unsigned char a = 0;
     while (true) {
+        /*******************************
+         * modeの対応表
+         * 0 : 何もない
+         * 1 : 攻撃(通常)
+         * 2 : 攻撃(反転)
+         * 3 : 防御(通常)
+         * 4 : 防御(反転)
+         */
         UseEncoder();
+        
     }
 }

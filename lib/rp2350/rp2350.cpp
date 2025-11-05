@@ -4,6 +4,7 @@
 #include "pico/stdlib.h"
 #include "../config.hpp"
 #include "hardware/pio.h"
+#include "hardware/sync.h"
 #include "picoPioUart.pio.h"
 #include "hardware/clocks.h"
 
@@ -37,20 +38,19 @@ void RP2350Setup(){
     sm_rx = 0;
 
     offset = pio_add_program(pio, &picoPioUartRx_program);
-    picoPioUartRx_program_init(pio, sm_rx, offset, UART_RXpin, SERIAL_BAUD);
+    picoPioUartRx_program_init(pio, sm_rx, offset, RP2350_UART_RXpin, SERIAL_BAUD);
 
     // 使うSMを指定します(送信と受信では別のSMを使う)
     sm_tx = 1;
 
     offset2 = pio_add_program(pio, &picoPioUartTx_program);
-    picoPioUartTx_program_init(pio, sm_tx, offset2, UART_TXpin, SERIAL_BAUD);
+    picoPioUartTx_program_init(pio, sm_tx, offset2, RP2350_UART_TXpin, SERIAL_BAUD);
 
-    gpio_set_irq_enabled_with_callback(UART_RXpin,GPIO_IRQ_EDGE_FALL,true,&RP2350Callback);
+    gpio_set_irq_enabled_with_callback(RP2350_UART_RXpin,GPIO_IRQ_EDGE_FALL,true,&RP2350Callback);
 }
 
 //割り込みが起きたときにrp2350にデータを返す関数
 void RP2350Callback(uint gpio, uint32_t events){
-    picoPioUartRx_program_clear_buffer();
     unsigned char data = picoPioUartRx_program_getc(true,&parity_check);
     if(data == 0x24){
         //エンコーダー
@@ -128,5 +128,16 @@ void picoPioUartRx_program_clear_buffer(){
     while (!pio_sm_is_rx_fifo_empty(pio, sm_rx)){
         uint32_t c32 = pio_sm_get(pio, sm_rx);
     }
+}
+
+void GiveRp2350NewMode(){
+    uint32_t save = save_and_disable_interrupts();  // 割り込みを禁止
+    
+    gpio_put(RP2350_UART_IRQpin,true);
+    picoPioUartTx_program_putc((uint8_t)mode,true);
+
+    restore_interrupts(save);
+    sleep_ms(1);
+    gpio_put(RP2350_UART_IRQpin,false);
 }
 
