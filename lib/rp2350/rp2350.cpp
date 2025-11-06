@@ -130,7 +130,7 @@ void picoPioUartRx_program_clear_buffer(){
     }
 }
 
-void GiveRp2350NewMode(){
+void GiveRP2350NewMode(){
     uint32_t save = save_and_disable_interrupts();  // 割り込みを禁止
     
     gpio_put(RP2350_UART_IRQpin,true);

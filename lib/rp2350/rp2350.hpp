@@ -13,6 +13,7 @@ void RP2350Setup();
 void picoPioUartTx_program_putc(unsigned char c, bool even_parity);
 unsigned char picoPioUartRx_program_getc(bool even_parity,bool* parity_check);
 void picoPioUartRx_program_clear_buffer();
+void GiveRP2350NewMode();
 
 #ifdef __cplusplus
 }

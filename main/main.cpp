@@ -17,6 +17,12 @@ std::string SerialWatch = "ang";
 int main()
 {
     stdio_init_all();
+    gpio_init(Offence_Switchpin);       gpio_set_dir(Offence_Switchpin,GPIO_IN);
+    gpio_init(Start_Switchpin);         gpio_set_dir(Start_Switchpin,GPIO_IN);
+    gpio_init(Determination_Switchpin); gpio_set_dir(Determination_Switchpin,GPIO_IN);
+    gpio_init(Switchpin1);              gpio_set_dir(Switchpin1,GPIO_IN);
+    gpio_init(Switchpin2);              gpio_set_dir(Switchpin2,GPIO_IN);
+    gpio_init(Switchpin3);              gpio_set_dir(Switchpin3,GPIO_IN);
 
     BLDCSetup();
     BLDCState(1000);
@@ -35,8 +41,36 @@ int main()
          * 2 : 攻撃(反転)
          * 3 : 防御(通常)
          * 4 : 防御(反転)
+         * 99 : 特殊挙動
          */
         UseEncoder();
-        
+        if(mode == 0 && gpio_get(Determination_Switchpin) == true){
+            if(gpio_get(Offence_Switchpin) == true){
+                //攻撃
+                if(gpio_get(Start_Switchpin) == true){
+                    mode = 1;
+                }else{
+                    mode = 2;
+                }
+            }else{
+                //防御
+                if(gpio_get(Start_Switchpin) == true){
+                    mode = 3;
+                }else{
+                    mode = 4;
+                }
+            }
+            GiveRP2350NewMode();
+        }else if(mode == 1 || mode == 2){
+            if(gpio_get(Offence_Switchpin) == false){
+                mode += 2;
+            }
+            GiveRP2350NewMode();
+        }else if(mode == 3 || mode == 4){
+            if(gpio_get(Offence_Switchpin) == true){
+                mode -= 2;
+            }
+            GiveRP2350NewMode();
+        }
     }
 }
