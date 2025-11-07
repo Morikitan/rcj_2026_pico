@@ -60,17 +60,17 @@ int main()
                     mode = 4;
                 }
             }
-            GiveRP2350NewMode();
+            TellRP2350NewMode();
         }else if(mode == 1 || mode == 2){
             if(gpio_get(Offence_Switchpin) == false){
                 mode += 2;
             }
-            GiveRP2350NewMode();
+            TellRP2350NewMode();
         }else if(mode == 3 || mode == 4){
             if(gpio_get(Offence_Switchpin) == true){
                 mode -= 2;
             }
-            GiveRP2350NewMode();
+            TellRP2350NewMode();
         }
     }
 }

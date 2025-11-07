@@ -41,4 +41,7 @@ extern uint8_t encoderData[8];
 #define Switchpin3 12
 
 //その他
+#define Dribbler_Rise_Sensorpin 28 //ドリブラーが上がったことを検知するスイッチ(デジタル)
+#define Power_Supply_Voltagepin 29 //電源電圧を調べるピン
+
 extern int mode;

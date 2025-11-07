@@ -47,6 +47,9 @@ void RP2350Setup(){
     picoPioUartTx_program_init(pio, sm_tx, offset2, RP2350_UART_TXpin, SERIAL_BAUD);
 
     gpio_set_irq_enabled_with_callback(RP2350_UART_RXpin,GPIO_IRQ_EDGE_FALL,true,&RP2350Callback);
+    gpio_set_irq_enabled_with_callback(Switchpin1,GPIO_IRQ_EDGE_RISE,true,&TellRP2350PushSwitch);
+    gpio_set_irq_enabled_with_callback(Switchpin2,GPIO_IRQ_EDGE_RISE,true,&TellRP2350PushSwitch);
+    gpio_set_irq_enabled_with_callback(Switchpin3,GPIO_IRQ_EDGE_RISE,true,&TellRP2350PushSwitch);
 }
 
 //割り込みが起きたときにrp2350にデータを返す関数
@@ -130,13 +133,23 @@ void picoPioUartRx_program_clear_buffer(){
     }
 }
 
-void GiveRP2350NewMode(){
+//modeが変わるような処理をしたとき、新しいmodeをrp2350に伝える関数
+//10～12のmodeは送れないので注意
+void TellRP2350NewMode(){
     uint32_t save = save_and_disable_interrupts();  // 割り込みを禁止
     
     gpio_put(RP2350_UART_IRQpin,true);
     picoPioUartTx_program_putc((uint8_t)mode,true);
 
     restore_interrupts(save);
+    sleep_ms(1);
+    gpio_put(RP2350_UART_IRQpin,false);
+}
+
+//ディスプレイを操作するスイッチが押されたことをrp2350に伝える関数
+void TellRP2350PushSwitch(uint gpio, uint32_t events){
+    gpio_put(RP2350_UART_IRQpin,true);
+    picoPioUartTx_program_putc((uint8_t)gpio,true);
     sleep_ms(1);
     gpio_put(RP2350_UART_IRQpin,false);
 }

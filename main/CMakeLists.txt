@@ -18,6 +18,6 @@ target_include_directories(main PRIVATE ../lib)
 
 # Add the standard library to the build
 target_link_libraries(main pico_stdlib hardware_pwm hardware_i2c hardware_gpio hardware_uart)
-target_link_libraries(main BLDC rp2350)
+target_link_libraries(main BLDC rp2350 encoder)
 
 pico_add_extra_outputs(main)

@@ -7,17 +7,18 @@
 uint8_t data[16];
 uint32_t deltaTime[4];
 
+//extern類
+bool isMotorClockWise[4];
+float motorFrequency[4];
+uint8_t encoderData[8];
+
 void EncoderSetup(){
     gpio_init(Encoder_RXpin);
     gpio_init(Encoder_TXpin);
     gpio_set_function(Encoder_RXpin,GPIO_FUNC_UART);
     gpio_set_function(Encoder_TXpin,GPIO_FUNC_UART);
     uart_init(encoderUART,230400);
-
-    bool isMotorClockWise[4];
-    float motorFrequency[4];
-    uint8_t encoderData[8];
-}
+}   
 
 void UseEncoder(){
     uart_write_blocking(encoderUART,(uint8_t[]){0x03},1);
