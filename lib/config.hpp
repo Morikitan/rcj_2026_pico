@@ -43,5 +43,6 @@ extern uint8_t encoderData[8];
 //その他
 #define Dribbler_Rise_Sensorpin 28 //ドリブラーが上がったことを検知するスイッチ(デジタル)
 #define Power_Supply_Voltagepin 29 //電源電圧を調べるピン
+#define Limit_Voltage 3.6 //リポが死ぬ電圧
 
 extern int mode;
