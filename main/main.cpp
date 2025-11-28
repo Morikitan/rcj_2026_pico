@@ -24,7 +24,7 @@ int main()
     gpio_init(Switchpin2);              gpio_set_dir(Switchpin2,GPIO_IN);
     gpio_init(Switchpin3);              gpio_set_dir(Switchpin3,GPIO_IN);
 
-    BLDCSetup();
+    // BLDCSetup();
     BLDCState(1000);
     printf("Arming ESC...\n");
     sleep_ms(2000);
@@ -33,6 +33,9 @@ int main()
     sleep_ms(100);
     
     unsigned char a = 0;
+
+    gpio_init(RP2350_UART_RXpin);
+    gpio_set_dir(RP2350_UART_RXpin,GPIO_OUT);
     while (true) {
         /*******************************
          * modeの対応表
@@ -43,7 +46,7 @@ int main()
          * 4 : 防御(反転)
          * 99 : 特殊挙動
          */
-        UseEncoder();
+        /*UseEncoder();
         if(mode == 0 && gpio_get(Determination_Switchpin) == true){
             if(gpio_get(Offence_Switchpin) == true){
                 //攻撃
@@ -71,7 +74,8 @@ int main()
                 mode -= 2;
             }
             TellRP2350NewMode();
-        }
-        
+        }*/
+        picoPioUartTx_program_putc(0x24,true);
+        sleep_ms(1000);
     }
 }

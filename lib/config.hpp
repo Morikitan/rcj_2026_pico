@@ -33,12 +33,12 @@ extern float motorFrequency[4];
 extern uint8_t encoderData[8];
 
 //スイッチ類
-#define Offence_Switchpin 7 //攻撃か防御かを決めるスイッチ
-#define Start_Switchpin 8 //初期状態の向きを決めるスイッチ
-#define Determination_Switchpin 9 //機体の電源をonにするタクトスイッチ
-#define Switchpin1 10
-#define Switchpin2 11
-#define Switchpin3 12
+#define Offence_Switchpin 7        //攻撃か防御かを決めるスイッチ
+#define Start_Switchpin 8          //初期状態の向きを決めるスイッチ
+#define Determination_Switchpin 9  //機体の電源をonにするタクトスイッチ
+#define Switchpin1 10              //ディスプレイの左ボタン
+#define Switchpin2 11              //ディスプレイの右ボタン
+#define Switchpin3 12              //ディスプレイの決定ボタン
 
 //その他
 #define Dribbler_Rise_Sensorpin 28 //ドリブラーが上がったことを検知するスイッチ(デジタル)

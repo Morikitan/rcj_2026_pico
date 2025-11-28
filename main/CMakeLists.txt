@@ -2,6 +2,8 @@
 
 add_executable(main main.cpp)
 
+target_compile_definitions(main PRIVATE PICO_XOSC_STARTUP_DELAY_MULTIPLIER=64)
+
 pico_set_program_name(main "main")
 pico_set_program_version(main "0.1")
 
