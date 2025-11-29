@@ -46,14 +46,21 @@ void RP2350Setup(){
     offset2 = pio_add_program(pio, &picoPioUartTx_program);
     picoPioUartTx_program_init(pio, sm_tx, offset2, RP2350_UART_TXpin, SERIAL_BAUD);
 
-    gpio_set_irq_enabled_with_callback(RP2350_UART_RXpin,GPIO_IRQ_EDGE_FALL,true,&RP2350Callback);
+    // gpio_set_irq_enabled_with_callback(RP2350_UART_RXpin,GPIO_IRQ_EDGE_FALL,true,&RP2350Callback);
     gpio_set_irq_enabled_with_callback(Switchpin1,GPIO_IRQ_EDGE_RISE,true,&TellRP2350PushSwitch);
     gpio_set_irq_enabled_with_callback(Switchpin2,GPIO_IRQ_EDGE_RISE,true,&TellRP2350PushSwitch);
     gpio_set_irq_enabled_with_callback(Switchpin3,GPIO_IRQ_EDGE_RISE,true,&TellRP2350PushSwitch);
+
+    gpio_init(RP2350_UART_IRQpin);
+    gpio_set_dir(RP2350_UART_IRQpin,GPIO_OUT);
 }
 
 //割り込みが起きたときにrp2350にデータを返す関数
 void RP2350Callback(uint gpio, uint32_t events){
+    // for(int i = 0;i < 99;i++){
+        // printf("らろあｐふぉあぽｆ\n");
+        // sleep_ms(1000);
+    // }
     unsigned char data = picoPioUartRx_program_getc(true,&parity_check);
     if(data == 0x24){
         //エンコーダー
@@ -108,10 +115,13 @@ void picoPioUartTx_program_putc(unsigned char data, bool even_parity) {
 //even_parity : 偶数か奇数のどちらになるようにパリティを付加されているか。trueで偶数。falseで奇数。
 //parity_check : パリティビットの結果。正しいならtrue。違ったらfalseで、例外処理を用意する。データがなくてもfalseになる。
 unsigned char picoPioUartRx_program_getc(bool even_parity,bool* parity_check) {
-    while (pio_sm_is_rx_fifo_empty(pio, sm_rx)) tight_loop_contents();
-
+    while (pio_sm_is_rx_fifo_empty(pio, sm_rx)) {
+        tight_loop_contents();
+        printf("まってる");
+        sleep_ms(99);
+    }
     uint32_t c32 = pio_sm_get(pio, sm_rx);
-    
+    printf(" %x ",c32);
     //パリティビットの検証をする
     bool real_parity = (c32 & 0x100) != 0;
     uint8_t byte = c32 & 0xff;

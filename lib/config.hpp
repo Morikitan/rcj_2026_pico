@@ -16,7 +16,7 @@ extern std::string SerialWatch;
 
 //UART for RP2350
 #define RP2350_UART_IRQpin 1
-#define RP2350_UART_RXpin 4
+#define RP2350_UART_RXpin 17 //J4の左
 #define RP2350_UART_TXpin 3
 #define SERIAL_BAUD 125000
 

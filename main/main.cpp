@@ -31,11 +31,11 @@ int main()
     
     RP2350Setup();
     sleep_ms(100);
-    
+    printf("初期化完了\n");
     unsigned char a = 0;
 
-    gpio_init(RP2350_UART_RXpin);
-    gpio_set_dir(RP2350_UART_RXpin,GPIO_OUT);
+    // gpio_init(RP2350_UART_RXpin);
+    // gpio_set_dir(RP2350_UART_RXpin,GPIO_IN);
     while (true) {
         /*******************************
          * modeの対応表
@@ -75,7 +75,17 @@ int main()
             }
             TellRP2350NewMode();
         }*/
-        picoPioUartTx_program_putc(0x24,true);
-        sleep_ms(1000);
+        bool parity_check;
+        unsigned char data = picoPioUartRx_program_getc(true,&parity_check);
+        if(parity_check == true){
+            printf("結果 %x\n",data);
+        }else{
+            printf("失敗");
+        }
+        // if(gpio_get(RP2350_UART_RXpin) == true){
+            // printf("HIGH\n");
+        // }else{
+            // printf("LOW\n");
+        // }
     }
 }
