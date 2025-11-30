@@ -75,13 +75,14 @@ int main()
             }
             TellRP2350NewMode();
         }*/
-        bool parity_check;
+       bool parity_check;
         unsigned char data = picoPioUartRx_program_getc(true,&parity_check);
         if(parity_check == true){
             printf("結果 %x\n",data);
         }else{
             printf("失敗");
         }
+       
         // if(gpio_get(RP2350_UART_RXpin) == true){
             // printf("HIGH\n");
         // }else{
