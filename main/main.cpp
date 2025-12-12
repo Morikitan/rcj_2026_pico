@@ -46,7 +46,7 @@ int main()
          * 4 : 防御(反転)
          * 99 : 特殊挙動
          */
-        /*UseEncoder();
+        UseEncoder();
         if(mode == 0 && gpio_get(Determination_Switchpin) == true){
             if(gpio_get(Offence_Switchpin) == true){
                 //攻撃
@@ -74,14 +74,14 @@ int main()
                 mode -= 2;
             }
             TellRP2350NewMode();
-        }*/
-       bool parity_check;
-        unsigned char data = picoPioUartRx_program_getc(true,&parity_check);
-        if(parity_check == true){
-            printf("結果 %x\n",data);
-        }else{
-            printf("失敗");
         }
+        //bool parity_check;
+        // unsigned char data = picoPioUartRx_program_getc(true,&parity_check);
+        // if(parity_check == true){
+            // printf("結果 %x\n",data);
+        // }else{
+            // printf("失敗");
+        // }
        
         // if(gpio_get(RP2350_UART_RXpin) == true){
             // printf("HIGH\n");
