@@ -81,7 +81,11 @@ void RP2350Callback(uint gpio, uint32_t events){
             //LOW → ボールを持っていない
             picoPioUartTx_program_putc(0x00,true);
         }
-        
+    }else if(data == 0x96){
+        //ジャイロセンサ
+        picoPioUartTx_program_putc(gyroBuffer[0],true);
+        // sleep_ms(10);
+        picoPioUartTx_program_putc(gyroBuffer[1],true);
     }
 }
 

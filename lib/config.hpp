@@ -28,9 +28,16 @@ extern std::string SerialWatch;
 #define Encoder_TXpin 16
 #define Encoder_RXpin 17
 
+//gyro sensor
+#define GyroI2C i2c0
+#define GyroSDApin 24 //サブマイコンに追放されました
+#define GyroSCLpin 25
+extern float AngleX;
+extern unsigned char gyroBuffer[2];
+
 extern bool isMotorClockWise[4];
 extern float motorFrequency[4];
-extern uint8_t encoderData[8];
+extern unsigned char encoderData[8];
 
 //スイッチ類
 #define Offence_Switchpin 7        //攻撃か防御かを決めるスイッチ

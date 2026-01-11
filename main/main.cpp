@@ -6,6 +6,7 @@
 #include "hardware/gpio.h"
 #include "hardware/uart.h"
 #include "hardware/pwm.h"
+#include "gyro/gyro.hpp"
 #include "rp2350/rp2350.hpp"
 #include "config.hpp"
 #include <string.h>
@@ -46,7 +47,8 @@ int main()
          * 4 : 防御(反転)
          * 99 : 特殊挙動
          */
-        UseEncoder();
+        // UseEncoder();
+        UseGyroSensor();
         if(mode == 0 && gpio_get(Determination_Switchpin) == true){
             if(gpio_get(Offence_Switchpin) == true){
                 //攻撃
